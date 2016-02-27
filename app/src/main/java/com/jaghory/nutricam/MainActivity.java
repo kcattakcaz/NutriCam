@@ -1,10 +1,10 @@
 package com.jaghory.nutricam;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,25 +16,43 @@ import com.clarifai.api.RecognitionResult;
 import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    List<RecognitionResult> results = null;
+
+    private final ClarifaiClient clarifai = new ClarifaiClient(Credentials.CLIENT_ID,
+            Credentials.CLIENT_SECRET);
+
     static final int REQUEST_TAKE_PHOTO = 1;
     String photoPath = "";
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate( savedInstanceState );
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
         Button picture_btn = (Button) findViewById(R.id.takePicture_btn);
         Button history_btn = (Button) findViewById(R.id.viewHistory_btn);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         picture_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,9 +65,12 @@ public class MainActivity extends AppCompatActivity {
         history_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),FoodHistoryActivity.class));
+                startActivity(new Intent(getApplicationContext(), FoodHistoryActivity.class));
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -88,17 +109,27 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 photoFile = createImageFile();
-            }
-
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 // Error occurred while creating the File
             }
 
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                startActivityForResult( takePictureIntent, REQUEST_TAKE_PHOTO );
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 galleryAddPic();
+
+                try {
+                    results =
+                            clarifai.recognize(new RecognitionRequest(photoFile));
+
+                    System.out.println("Clarifai error");
+
+                }catch (ClarifaiException e)
+                {
+                    System.out.println("Clarifai error");
+                }
+
             }
         }
     }
@@ -108,52 +139,53 @@ public class MainActivity extends AppCompatActivity {
      * Add picture to gallery
      */
     private void galleryAddPic() {
+
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(photoPath);
         Uri contentUri = Uri.fromFile(f);
+
 
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
 
-    /** Sends the given bitmap to Clarifai for recognition and returns the result. */
-    private RecognitionResult recognizeBitmap(Bitmap bitmap) {
-        try {
-            // Scale down the image. This step is optional. However, sending large images over the
-            // network is slow and  does not significantly improve recognition performance.
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
-                    320 * bitmap.getHeight() / bitmap.getWidth(), true);
+    @Override
+    public void onStart() {
+        super.onStart();
 
-            // Compress the image as a JPEG.
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            byte[] jpeg = out.toByteArray();
-
-            // Send the JPEG to Clarifai and return the result.
-            return client.recognize(new RecognitionRequest(jpeg)).get(0);
-        } catch (ClarifaiException e) {
-            Log.e(TAG, "Clarifai error", e);
-            return null;
-        }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.jaghory.nutricam/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
-    /** Updates the UI by displaying tags for the given result. */
-    private void updateUIForResult(RecognitionResult result) {
-        if (result != null) {
-            if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
-                // Display the list of tags in the UI.
-                StringBuilder b = new StringBuilder();
-                for (Tag tag : result.getTags()) {
-                    b.append(b.length() > 0 ? ", " : "").append(tag.getName());
-                }
-                textView.setText("Tags:\n" + b);
-            } else {
-                Log.e(TAG, "Clarifai: " + result.getStatusMessage());
-                textView.setText("Sorry, there was an error recognizing your image.");
-            }
-        } else {
-            textView.setText("Sorry, there was an error recognizing your image.");
-        }
-        selectButton.setEnabled(true);
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.jaghory.nutricam/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }
