@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<RecognitionResult> results = null;
 
+    private File photoFilereally = null;
+
     private final ClarifaiClient clarifai = new ClarifaiClient(Credentials.CLIENT_ID,
             Credentials.CLIENT_SECRET);
 
@@ -118,22 +120,10 @@ public class MainActivity extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
 
+                this.photoFilereally = photoFile;
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                galleryAddPic();
-
-                try {
-                    results =
-                            clarifai.recognize(new RecognitionRequest(photoFile));
-                    TextView t = (TextView) findViewById(R.id.textView);
-                    t.setText(tags_to_string());
-
-                    System.out.println("Clarifai error");
-
-                }catch (ClarifaiException e)
-                {
-                    System.out.println("Clarifai error");
-                }
 
             }
         }
@@ -207,5 +197,37 @@ public class MainActivity extends AppCompatActivity {
         }
         return out;
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+                galleryAddPic();
+
+                System.out.println(data);
+
+                try {
+                    File photoFile = this.photoFilereally;
+                    //System.out.println(photoFile.toString());
+                    results = clarifai.recognize(new RecognitionRequest(photoFile));
+                    TextView t = (TextView) findViewById(R.id.textView);
+                    t.setText(tags_to_string());
+
+                    System.out.println("Clarifai error");
+
+                }catch (ClarifaiException e)
+                {
+                    System.out.println("Clarifai error");
+                }
+
+                // Do something with the contact here (bigger example below)
+            }
+        }
     }
 }
