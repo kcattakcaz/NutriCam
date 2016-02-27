@@ -1,6 +1,7 @@
 package com.jaghory.nutricam;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,6 +9,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.clarifai.api.ClarifaiClient;
+import com.clarifai.api.RecognitionRequest;
+import com.clarifai.api.RecognitionResult;
+import com.clarifai.api.Tag;
+import com.clarifai.api.exception.ClarifaiException;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -95,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * Add picture to gallery
      */
@@ -105,5 +114,46 @@ public class MainActivity extends AppCompatActivity {
 
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
+    }
+
+    /** Sends the given bitmap to Clarifai for recognition and returns the result. */
+    private RecognitionResult recognizeBitmap(Bitmap bitmap) {
+        try {
+            // Scale down the image. This step is optional. However, sending large images over the
+            // network is slow and  does not significantly improve recognition performance.
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
+                    320 * bitmap.getHeight() / bitmap.getWidth(), true);
+
+            // Compress the image as a JPEG.
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            byte[] jpeg = out.toByteArray();
+
+            // Send the JPEG to Clarifai and return the result.
+            return client.recognize(new RecognitionRequest(jpeg)).get(0);
+        } catch (ClarifaiException e) {
+            Log.e(TAG, "Clarifai error", e);
+            return null;
+        }
+    }
+
+    /** Updates the UI by displaying tags for the given result. */
+    private void updateUIForResult(RecognitionResult result) {
+        if (result != null) {
+            if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
+                // Display the list of tags in the UI.
+                StringBuilder b = new StringBuilder();
+                for (Tag tag : result.getTags()) {
+                    b.append(b.length() > 0 ? ", " : "").append(tag.getName());
+                }
+                textView.setText("Tags:\n" + b);
+            } else {
+                Log.e(TAG, "Clarifai: " + result.getStatusMessage());
+                textView.setText("Sorry, there was an error recognizing your image.");
+            }
+        } else {
+            textView.setText("Sorry, there was an error recognizing your image.");
+        }
+        selectButton.setEnabled(true);
     }
 }
