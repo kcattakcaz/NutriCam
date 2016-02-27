@@ -8,6 +8,14 @@
               android:gravity="center"
               tools:context="com.jaghory.nutricam.MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
+
     <Button
         android:layout_width="250dp"
         android:layout_height="80dp"
@@ -26,4 +34,5 @@
         android:background="#5a69bf"
         android:textColor="#f5f5f5"
         android:textSize="@dimen/abc_text_size_medium_material"/>
+
 </LinearLayout>

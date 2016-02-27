@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.clarifai.api.ClarifaiClient;
 import com.clarifai.api.RecognitionRequest;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Continue only if the File was successfully created
             if (photoFile != null) {
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 galleryAddPic();
@@ -122,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     results =
                             clarifai.recognize(new RecognitionRequest(photoFile));
+                    TextView t = (TextView) findViewById(R.id.textView);
+                    t.setText(tags_to_string());
 
                     System.out.println("Clarifai error");
 
@@ -187,5 +192,20 @@ public class MainActivity extends AppCompatActivity {
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    private String tags_to_string(){
+        String out = "";
+
+        try {
+            for (Tag tag : results.get(0).getTags()) {
+                out = tag.getName() + " ";
+            }
+        }catch (Exception e){
+
+            out = "Error";
+        }
+        return out;
+
     }
 }
