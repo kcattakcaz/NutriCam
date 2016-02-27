@@ -2,6 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBack"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -10,7 +11,7 @@
 
     <!-- Login progress -->
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="258dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/login_username"
@@ -19,7 +20,7 @@
         android:inputType="textAutoComplete|textEmailAddress"/>
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="263dp"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
@@ -32,7 +33,7 @@
         android:text="@string/login_button"
         android:id="@+id/login_btn"
         android:layout_marginTop="10dp"
-        android:background="#5a69bf"
+        android:background="#842235"
         android:textColor="#f5f5f5"/>
 
     <Button
@@ -42,5 +43,5 @@
         android:id="@+id/newUser_btn"
         android:layout_marginTop="15dp"
         android:textColor="#f5f5f5"
-        android:background="#5a69bf"/>
+        android:background="#842235"/>
 </LinearLayout>

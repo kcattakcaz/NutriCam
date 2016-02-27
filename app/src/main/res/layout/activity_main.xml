@@ -3,7 +3,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
-              android:layout_width="match_parent"
+                android:background="@color/colorBack"
+                android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center"
               tools:context="com.jaghory.nutricam.MainActivity">
@@ -21,7 +22,7 @@
         android:layout_height="80dp"
         android:text="@string/take_picture"
         android:id="@+id/takePicture_btn"
-        android:background="#5a69bf"
+        android:background="#842235"
         android:textColor="#f5f5f5"
         android:layout_marginBottom="30dp"
         android:textSize="@dimen/abc_text_size_medium_material"/>
@@ -31,7 +32,7 @@
         android:layout_height="80dp"
         android:text="@string/view_food_history"
         android:id="@+id/viewHistory_btn"
-        android:background="#5a69bf"
+        android:background="#842235"
         android:textColor="#f5f5f5"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
