@@ -24,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Button login_btn = (Button) findViewById(R.id.login_btn);
+        Button newuser_btn = (Button) findViewById(R.id.newUser_btn);
         final EditText username = (EditText) findViewById(R.id.login_username);
         final EditText password = (EditText) findViewById(R.id.login_password);
 
@@ -50,5 +51,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        newuser_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),SignUpActivity.class));
+            }
+        });
     }
 }

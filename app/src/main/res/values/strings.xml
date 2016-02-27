@@ -11,12 +11,14 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+        completions."</string>
+
     <string name="login_button">Login</string>
     <string name="signUp_button">Sign Up</string>
     <string name="newUser_button">New User</string>
-    <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="view_food_history">View Food History</string>
+    <string name="food_history_title">Your Food History</string>
 </resources>

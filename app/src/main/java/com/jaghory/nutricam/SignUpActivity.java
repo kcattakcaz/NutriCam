@@ -22,7 +22,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Firebase.setAndroidContext(this.getApplicationContext());
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_signup);
 
         Button signup_btn = (Button) findViewById(R.id.signUp_btn);
         final EditText username = (EditText) findViewById(R.id.signup_username);
