@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
                 android:background="@color/colorBack"
                 android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -14,26 +13,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/likeButton"
-        android:layout_gravity="top|right"
-        android:src="@android:drawable/btn_star_big_on" />
+        android:layout_gravity="right"
+        android:src="@android:drawable/btn_star_big_on"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:background="#00ffffff"
+        android:layout_margin="10dp" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dislikeButton"
         android:layout_gravity="top|left"
-        android:src="@android:drawable/btn_star_big_off" />
+        android:src="@android:drawable/btn_star_big_off"
+        android:layout_alignParentTop="true"
+        android:background="#00ffffff"
+        android:layout_margin="10dp" />
 
     <TextView
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/main_activity_text"
         android:id="@+id/textView"
-        android:layout_weight="0.56"
         android:layout_marginBottom="10dp"
         android:gravity="center_horizontal"
-        android:layout_gravity="center_horizontal" />
+        android:layout_toLeftOf="@+id/likeButton"
+        android:layout_toRightOf="@+id/dislikeButton"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/dislikeButton" />
 
     <Button
         android:layout_width="250dp"
@@ -43,7 +51,9 @@
         android:background="#842235"
         android:textColor="#f5f5f5"
         android:layout_marginBottom="20dp"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_above="@+id/viewHistory_btn"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="250dp"
@@ -52,6 +62,9 @@
         android:id="@+id/viewHistory_btn"
         android:background="#842235"
         android:textColor="#f5f5f5"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" />
 
-</LinearLayout>
+</RelativeLayout>
