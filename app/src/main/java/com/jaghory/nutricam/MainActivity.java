@@ -12,6 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import com.clarifai.api.ClarifaiClient;
 import com.clarifai.api.RecognitionRequest;
 import com.clarifai.api.RecognitionResult;
@@ -23,10 +29,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -186,20 +189,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String tags_to_string(){
+    private String tags_to_string()throws IOException{
         String out = "";
 
-        ArrayList<String> stuff = new ArrayList<String>();
-            stuff.add("apple");
-            stuff.add("coffee");
-            stuff.add("soda");
-            stuff.add("coke");
-            stuff.add("chips");
+
+        String thisLine = "";
+        ArrayList<String> food = new ArrayList<>();
+
+        BufferedReader br = new BufferedReader(new FileReader(new File("food.txt")));
+        while ((thisLine = br.readLine()) != null) {
+            thisLine = thisLine.toLowerCase();
+            food.add(thisLine);
+        }
+
 
         try {
             for (Tag tag : results.get(0).getTags()) {
-                String food = tag.getName();
-                out += food + ", ";
+                String tg = tag.getName().toLowerCase();
+                    out+= tg ;
+                for(int i = 0; i < food.size(); i++){
+                    if(food.get(i).equals(tg)){
+                        out+= (food.get(i));
+
+                    }else { out+="no";}
+                }
+
             }
         }catch (Exception e){
 
@@ -233,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
                 }catch (ClarifaiException e)
                 {
                     System.out.println("Clarifai error");
+                }catch(IOException a)
+                {
+                    System.out.println("Error");
                 }
 
                 // Do something with the contact here (bigger example below)
