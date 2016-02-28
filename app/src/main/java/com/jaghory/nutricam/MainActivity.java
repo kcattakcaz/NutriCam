@@ -26,6 +26,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -184,12 +185,21 @@ public class MainActivity extends AppCompatActivity {
         client.disconnect();
     }
 
+
     private String tags_to_string(){
         String out = "";
 
+        ArrayList<String> stuff = new ArrayList<String>();
+            stuff.add("apple");
+            stuff.add("coffee");
+            stuff.add("soda");
+            stuff.add("coke");
+            stuff.add("chips");
+
         try {
             for (Tag tag : results.get(0).getTags()) {
-                out = tag.getName() + " ";
+                String food = tag.getName();
+                out += food + ", ";
             }
         }catch (Exception e){
 
@@ -198,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
         return out;
 
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
