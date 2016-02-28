@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         final Firebase.AuthResultHandler authResultHandler = new Firebase.AuthResultHandler(){
             @Override
             public void onAuthenticated(AuthData authData){
+                fRef.child("users").child(authData.getUid()).child("login").setValue("jenna doesn't know why doctor who is awesome but dena does so dena is awesome");
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
             }
 

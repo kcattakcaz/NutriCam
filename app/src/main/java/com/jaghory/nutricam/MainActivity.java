@@ -7,15 +7,22 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.firebase.client.Firebase;
+import com.wolfram.alpha.WAEngine;
+import com.wolfram.alpha.WAException;
+import com.wolfram.alpha.WAPlainText;
+import com.wolfram.alpha.WAPod;
+import com.wolfram.alpha.WAQuery;
+import com.wolfram.alpha.WAQueryResult;
+import com.wolfram.alpha.WASubpod;
+
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 
 import com.clarifai.api.ClarifaiClient;
@@ -30,10 +37,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public ArrayList<String> satan = new ArrayList<>();
 
     List<RecognitionResult> results = null;
 
@@ -54,10 +65,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Firebase sfireref = new Firebase("https://nutricam.firebaseio.com/users/");
+
         setContentView(R.layout.activity_main);
 
         Button picture_btn = (Button) findViewById(R.id.takePicture_btn);
         Button history_btn = (Button) findViewById(R.id.viewHistory_btn);
+        ImageButton like_btn = (ImageButton) findViewById(R.id.likeButton);
+        ImageButton dislike_btn = (ImageButton) findViewById(R.id.dislikeButton);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -65,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         picture_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                satan.clear();
                 // Take a picture and save it to the gallery
                 takePictureIntent();
             }
@@ -76,6 +93,27 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), FoodHistoryActivity.class));
             }
         });
+
+        like_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                for (int i = 0; i < satan.size(); i++) {
+                    sfireref.child(sfireref.getAuth().getUid()).child(satan.get(i)).child("like").setValue(true);
+
+                }
+            }
+        });
+
+        dislike_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                for (int i = 0; i < satan.size(); i++) {
+                    sfireref.child(sfireref.getAuth().getUid()).child(satan.get(i)).child("like").setValue(false);
+
+                }
+            }
+        });
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -128,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-
             }
         }
     }
@@ -190,38 +227,164 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String tags_to_string()throws IOException{
+        Firebase brimstone = new Firebase("https://nutricam.firebaseio.com/users/");
         String out = "";
+        String keyword = "";
 
-
-        String thisLine = "";
-        ArrayList<String> food = new ArrayList<>();
-
-        BufferedReader br = new BufferedReader(new FileReader(new File("food.txt")));
-        while ((thisLine = br.readLine()) != null) {
-            thisLine = thisLine.toLowerCase();
-            food.add(thisLine);
-        }
-
+        List<String> food = Arrays.asList("apple", "orange", "coffee", "chips", "banana", "cookie", "pretzel",
+                 "egg", "donut", "bagel", "pizza", "granola", "chocolate", "water", "lettuce", "tomato", "cheese", "cake",
+                "olive oil");
 
         try {
+            int found =0;
             for (Tag tag : results.get(0).getTags()) {
+
                 String tg = tag.getName().toLowerCase();
-                    out+= tg ;
+                System.out.println(tg);
                 for(int i = 0; i < food.size(); i++){
                     if(food.get(i).equals(tg)){
-                        out+= (food.get(i));
+                        found=1;
+                        keyword = food.get(i);
+                        brimstone.child(brimstone.getAuth().getUid()).child(keyword).child("date").setValue(new Date().toString());
+                        out += keyword.toUpperCase() + "\n";
+                        satan.add(keyword);
 
-                    }else { out+="no";}
+                    }
                 }
 
+            }
+            if(found ==0)
+            {
+                out = "Did not find any food in the picture :[";
+                return out;
             }
         }catch (Exception e){
 
             out = "Error";
         }
-        return out;
 
+
+        WAQueryResult queryResult = null;
+        WAEngine engine = new WAEngine();
+
+        // These properties will be set in all the WAQuery objects created from this WAEngine.
+        engine.setAppID("AJ5QRY-Y8GWWL4HGH");
+        engine.addFormat("plaintext");
+
+        // Create the query.
+        WAQuery query = engine.createQuery();
+
+        // Set properties of the query.
+        query.setInput(keyword + " food");
+
+        // This sends the URL to the Wolfram|Alpha server, gets the XML result
+        // and parses it into an object hierarchy held by the WAQueryResult object.
+        try {
+            queryResult = engine.performQuery(query);
+            queryResult.getXML();
+        }
+        catch (WAException e) {
+            e.printStackTrace();
+        }
+
+        String xmlString = queryResult.getXML().toString();
+        char[] xml = queryResult.getXML().toString().toCharArray();
+
+        //getting info
+
+        String calories="", protein="", carbohydrates="", sugar="", calcium="", sodium="", cholesterol = "";
+        int index = xmlString.indexOf("total calories ");
+            for( int i = index+16; i<xmlString.length();i++)
+            {
+                if(xml[i] != ' ')
+                {
+                    calories+=xml[i];
+                }
+                else{ break; }
+            }
+        index = xmlString.indexOf("cholesterol ");
+        for( int i = index+13; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                cholesterol+=xml[i];
+            }
+            else{ break; }
+        }
+        index = xmlString.indexOf("protein ");
+        for( int i = index+9; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                protein+=xml[i];
+            }
+            else{ break; }
+        }
+        index = xmlString.indexOf("total carbohydrates ");
+        for( int i = index+21; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                carbohydrates+=xml[i];
+            }
+            else{ break; }
+        }
+        index = xmlString.indexOf("sugar ");
+        for( int i = index+7; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                sugar+=xml[i];
+            }
+            else{ break; }
+        }
+        String grams="";
+        int index2 = xmlString.indexOf("(");
+        index = xmlString.indexOf("calcium ");
+        for( int i = index2+1; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                grams+=xml[i];
+            }
+            else{ break; }
+        }
+        for( int i = index+9; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                calcium+=xml[i];
+            }
+            else{ break; }
+        }
+
+
+        try {
+            calcium = calcium.substring(0, calcium.length() - 1);
+            double calciumDouble = Double.parseDouble(calcium) / 100;
+            calciumDouble = (calciumDouble * Double.parseDouble(grams));
+            calcium = Double.toString(Math.round(calciumDouble));
+        }
+        catch(Exception e){
+            calcium = "0";
+        }
+
+
+
+        index = xmlString.indexOf("sodium ");
+        for( int i = index+8; i<xmlString.length();i++)
+        {
+            if(xml[i] != ' ')
+            {
+                sodium+=xml[i];
+            }
+            else{ break; }
+        }
+    out+= "\nCalories: "+ calories + "\nCholestrol: " + cholesterol + "mg\nProtein: " + protein;
+        out+="mg\nCarbs: "+ carbohydrates + "g\nSugar: "+sugar + "g\nCalcium: "+calcium + "mg\nSodium: "+ sodium + "ug";
+        return out;
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -256,4 +419,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

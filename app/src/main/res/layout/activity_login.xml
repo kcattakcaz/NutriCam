@@ -10,13 +10,20 @@
     tools:context="com.jaghory.nutricam.LoginActivity">
 
     <!-- Login progress -->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/logo" />
+
     <EditText
         android:layout_width="258dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/login_username"
         android:hint="@string/email"
-        android:layout_marginTop="20dp"
         android:inputType="textAutoComplete|textEmailAddress"/>
 
     <EditText
@@ -33,7 +40,7 @@
         android:text="@string/login_button"
         android:id="@+id/login_btn"
         android:layout_marginTop="10dp"
-        android:background="#842235"
+        android:background="#a90001"
         android:textColor="#f5f5f5"/>
 
     <Button
@@ -43,5 +50,6 @@
         android:id="@+id/newUser_btn"
         android:layout_marginTop="15dp"
         android:textColor="#f5f5f5"
-        android:background="#842235"/>
+        android:background="#a80001"/>
+
 </LinearLayout>

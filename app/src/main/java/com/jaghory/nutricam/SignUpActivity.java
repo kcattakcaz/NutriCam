@@ -37,9 +37,9 @@ public class SignUpActivity extends AppCompatActivity {
             fRef.createUser(username.getText().toString(), password.getText().toString(), new Firebase.ValueResultHandler<Map<String, Object>>() {
                 @Override
                 public void onSuccess(Map<String, Object> result) {
-                    Intent finRegister = new Intent(getApplicationContext(),LoginActivity.class);
-                    finRegister.putExtra("username",username.getText().toString());
-                    finRegister.putExtra("password",password.getText().toString());
+                    Intent finRegister = new Intent(getApplicationContext(), LoginActivity.class);
+                    finRegister.putExtra("username", username.getText().toString());
+                    finRegister.putExtra("password", password.getText().toString());
                     startActivity(finRegister);
                 }
 
@@ -47,14 +47,18 @@ public class SignUpActivity extends AppCompatActivity {
                 public void onError(FirebaseError firebaseError) {
                     String err = new String();
                     String usr_name = username.getText().toString();
-                    switch (firebaseError.getCode()){
-                        case FirebaseError.EMAIL_TAKEN: err = usr_name+" is taken, try again.";
+                    switch (firebaseError.getCode()) {
+                        case FirebaseError.EMAIL_TAKEN:
+                            err = usr_name + " is taken, try again.";
                             break;
-                        case FirebaseError.INVALID_EMAIL: err = usr_name+" is not a valid e-mail, try again.";
+                        case FirebaseError.INVALID_EMAIL:
+                            err = usr_name + " is not a valid e-mail, try again.";
                             break;
-                        case FirebaseError.INVALID_PASSWORD: err = "Not a valid password, try again.";
+                        case FirebaseError.INVALID_PASSWORD:
+                            err = "Not a valid password, try again.";
                             break;
-                        default: err = "Unknown error creating account.";
+                        default:
+                            err = "Unknown error creating account.";
                             break;
                     }
                     Snackbar.make(v, err, Snackbar.LENGTH_LONG)
