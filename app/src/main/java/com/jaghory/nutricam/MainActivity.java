@@ -22,6 +22,8 @@ import com.wolfram.alpha.WAQuery;
 import com.wolfram.alpha.WAQueryResult;
 import com.wolfram.alpha.WASubpod;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,6 +38,11 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -382,6 +389,52 @@ public class MainActivity extends AppCompatActivity {
         }
     out+= "\nCalories: "+ calories + "\nCholestrol: " + cholesterol + "mg\nProtein: " + protein;
         out+="mg\nCarbs: "+ carbohydrates + "g\nSugar: "+sugar + "g\nCalcium: "+calcium + "mg\nSodium: "+ sodium + "ug";
+
+
+
+
+
+
+/*
+        HttpClient httpclient = HttpClients.createDefault();
+        HttpPost httppost = new HttpPost(e"
+// Request parameters and other properties.
+        List<String> params = new ArrayList<String>();
+
+        params.add('[' + calories+','+ protein+','+ carbohydrates+
+                ',' +sugar+',' + calcium+','+ sodium+','+ cholesterol+ ']');
+
+        httpPostRequest.setHeader("Authorization:Bearer", "zu4L/sbq+yYXkTP+tJm608UKB2dF20KsxuHqUMvojBYBQNfkOEnMkOnRKZiDyKs6ll8d/W1COuObVcFk11islg=="); //API Key Here
+        httpPostRequest.setHeader("Content-Type:application", "json"); //required forsubmitting in json format
+        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+
+//Execute and get the response.
+        HttpResponse response = httpclient.execute(httppost);
+        HttpEntity entity = response.getEntity();
+
+        if (entity != null) {
+            InputStream instream = entity.getContent();
+            try {
+                //Stuff
+            } finally {
+                instream.close();
+            }
+        }
+*/
+        System.out.println("AZURE");
+        URL url2 = new URL("\"https://ussouthcentral.services.azureml.net/workspaces/3eb1c7b1c750459d9b0cf36dee153f2f/services/3646018e338d4b16aa8688a3b38687e0/execute?api-version=2.0&details=true");
+        URLConnection urC = url2.openConnection();
+        urC.setRequestProperty("Authorization","Bearer \"zu4L/sbq+yYXkTP+tJm608UKB2dF20KsxuHqUMvojBYBQNfkOEnMkOnRKZiDyKs6ll8d/W1COuObVcFk11islg==");
+        urC.setRequestProperty("Content-Type","application/json");
+        urC.setRequestProperty("Accept","application/json");
+        //InputStream in = new BufferedInputStream( urC.getInputStream());
+        try{
+          Object data = urC.getContent();
+            System.out.println("DataTYpe "+ data.getClass());
+        }
+        catch(Exception e){
+            System.out.println("ERROR is called --'"+ e.getMessage());
+        }
         return out;
     }
 
