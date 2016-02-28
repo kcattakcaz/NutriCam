@@ -49,6 +49,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class MainActivity extends AppCompatActivity {
 
     public ArrayList<String> satan = new ArrayList<>();
@@ -391,8 +393,11 @@ public class MainActivity extends AppCompatActivity {
         out+="mg\nCarbs: "+ carbohydrates + "g\nSugar: "+sugar + "g\nCalcium: "+calcium + "mg\nSodium: "+ sodium + "ug";
 
 
-
-
+        double calcalories = Double.parseDouble(calories);
+        if(calcalories <= 150)
+        {
+            out+="HEALTHY";
+        }else{out+="UNHEALTHY";}
 
 
 /*
@@ -421,13 +426,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 */
+/*
         System.out.println("AZURE");
         URL url2 = new URL("\"https://ussouthcentral.services.azureml.net/workspaces/3eb1c7b1c750459d9b0cf36dee153f2f/services/3646018e338d4b16aa8688a3b38687e0/execute?api-version=2.0&details=true");
-        URLConnection urC = url2.openConnection();
+        HttpsURLConnection urC = (HttpsURLConnection) url2.openConnection();
         urC.setRequestProperty("Authorization","Bearer \"zu4L/sbq+yYXkTP+tJm608UKB2dF20KsxuHqUMvojBYBQNfkOEnMkOnRKZiDyKs6ll8d/W1COuObVcFk11islg==");
         urC.setRequestProperty("Content-Type","application/json");
         urC.setRequestProperty("Accept","application/json");
-        //InputStream in = new BufferedInputStream( urC.getInputStream());
+
+
+        String inputstuff = "{ Inputs: { input1: { ColumnNames: [ healthy, Energ_Kcal, Protein, Carbohydrt, Sugar_Tot, Calcium, " +
+                "Sodium, Cholestrl ], Values: [ [" + calories+','+ protein+','+ carbohydrates+ ',' +sugar+',' + calcium+','+ sodium+','
+                + cholesterol+ "], [ '0', '0', '0', '0', '0', '0', '0', '0' ] ] } }, GlobalParameters: {} }";
+        InputStream in = new BufferedInputStream( urC.getInputStream());
+
         try{
           Object data = urC.getContent();
             System.out.println("DataTYpe "+ data.getClass());
@@ -435,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
         catch(Exception e){
             System.out.println("ERROR is called --'"+ e.getMessage());
         }
+*/
         return out;
     }
 
@@ -465,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Clarifai error");
                 }catch(IOException a)
                 {
-                    System.out.println("Error");
+                    System.out.println("Error" + a.getMessage());
                 }
 
                 // Do something with the contact here (bigger example below)
