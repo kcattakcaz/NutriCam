@@ -12,7 +12,7 @@ public class Credentials {
     // Also, if you're committing your code to a public repo, be careful not to check in your
     // credentials -- we're including these here so you can get started out of the box, but this is
     // generally a bad practice.
-    static final String CLIENT_ID = "OoXl6JBsZ0X_42jk6Qfspng9yi4ER95NEJT_xDYA";
-    static final String CLIENT_SECRET = "zeHjFNzXsfHxy6o80InMYukrUUTINoy2lXmajYRe";
+    static final String CLIENT_ID = "FILLITINYOURSELF";
+    static final String CLIENT_SECRET = "FILLITINYOURSELF";
 
 }
