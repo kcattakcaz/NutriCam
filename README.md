@@ -5,6 +5,11 @@ An app that uses the Clarifai API to identify food you have taken a picture of, 
 Note that you may need to provide your own API keys and URLs for some portions of the app to run if you want to compile it yourself.
 
 
+Learn more at
+
+http://devpost.com/software/nutricam
+
+
 Created for SpartaHack 2016 by
 
 -Dena Mujtaba
